@@ -165,6 +165,19 @@ const ContactForm = () => {
 					/>
 				</div>
 
+				{/* Honeypot field for spam protection */}
+				<input
+					type='checkbox'
+					name='botcheck'
+					className='hidden'
+					style={{ display: 'none' }}
+					tabIndex='-1'
+					autoComplete='off'
+				/>
+
+				{/* Show API error if present */}
+				{errors.api && <p className='text-red-500 text-center text-sm'>{errors.api}</p>}
+
 				<button
 					type='submit'
 					disabled={isLoading}

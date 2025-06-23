@@ -41,16 +41,41 @@ export const useFormSubmission = (initialState) => {
 
 		setIsLoading(true);
 		try {
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
-			console.log('Form submitted:', formData);
-			setIsSubmitted(true);
-			setTimeout(() => {
-				setIsSubmitted(false);
-				setFormData(initialState);
-			}, 3000);
+			// Prepare data for Web3Forms
+			const payload = {
+				access_key: '01f3685d-1306-469a-8349-5f95346a4204',
+				name: formData.name,
+				email: formData.email,
+				phone: formData.phone,
+				company: formData.company,
+				product: formData.product,
+				quantity: formData.quantity,
+				message: formData.message,
+				botcheck: '', // honeypot field for spam protection
+			};
+
+			const response = await fetch('https://api.web3forms.com/submit', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(payload),
+			});
+
+			const result = await response.json();
+
+			if (result.success) {
+				setIsSubmitted(true);
+				setTimeout(() => {
+					setIsSubmitted(false);
+					setFormData(initialState);
+				}, 3000);
+			} else {
+				setErrors({ api: result.message || 'Submission failed. Please try again.' });
+			}
 		} catch (error) {
 			console.error('Submission error:', error);
+			setErrors({ api: 'Submission failed. Please try again.' });
 		} finally {
 			setIsLoading(false);
 		}
